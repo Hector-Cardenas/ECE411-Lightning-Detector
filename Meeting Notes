@@ -2,3 +2,8 @@ __Meeting notes 28OCT2024__
 
 Ishaan and Riley no shows, attributing to new meeting schedule. Will off-cycle schedule Wednesday. 
 Edit; Riley showed at 11:08, still cancelling. Setting up Google Calendar alerts for team meetings to do better next time. 
+
+__01NOV2024__
+Based on complexity feedback, switching microprocessors to Raspberry Pico W to do wifi signalling on detected event
+Adding transceiver to add HAM alerts as actuator/output
+TODO: Touchscreen interface; update PDS
