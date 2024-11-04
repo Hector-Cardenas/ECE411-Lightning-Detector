@@ -7,3 +7,14 @@ __01NOV2024__
 Based on complexity feedback, switching microprocessors to Raspberry Pico W to do wifi signalling on detected event
 Adding transceiver to add HAM alerts as actuator/output
 TODO: Touchscreen interface; update PDS
+
+__04NOV2024__
+Get test breadboard ready for class demo - Ishaan
+Get schematic updated for Thursday class - Hector
+Create schedule for Thursday class - Nathan/Riley
+Have IO definitions in main.c - Nathan
+  
+Create function structure for peripherals - Riley
+Figure out power requirements - Ishaan/Hector
+  How to power circuit (screen, microcontroller, peripherals)
+  How to recharge batteries
