@@ -6,7 +6,7 @@ Edit; Riley showed at 11:08, still cancelling. Setting up Google Calendar alerts
 __01NOV2024__
 Based on complexity feedback, switching microprocessors to Raspberry Pico W to do wifi signalling on detected event
 Adding transceiver to add HAM alerts as actuator/output
-TODO: Touchscreen interface; update PDS
+TODO: Touchscreen interface; update PDS -> after we make final decision on complexity-adding output
 
 __04NOV2024__
 Get test breadboard ready for class demo - Ishaan
