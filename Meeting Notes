@@ -18,3 +18,15 @@ Create function structure for peripherals - Riley
 Figure out power requirements - Ishaan/Hector
   How to power circuit (screen, microcontroller, peripherals)
   How to recharge batteries
+
+__08NOV2024__
+Got eval board hooked up and verified that it was working
+Schematic has been updated
+Schedule was created
+IO definitions were written
+Function structure was written 
+
+Ishaan has a ADP5091 to be used to recharge our battery 
+
+Still need to figure out power requirements 
+
