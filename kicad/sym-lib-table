@@ -2,4 +2,6 @@
   (version 7)
   (lib (name "NUCLEO-L432KC")(type "KiCad")(uri "${KIPRJMOD}/lib/NUCLEO-L432KC.kicad_sym")(options "")(descr ""))
   (lib (name "LMH2121")(type "KiCad")(uri "${KIPRJMOD}/lib/LMH2121.kicad_sym")(options "")(descr ""))
+  (lib (name "Raspberry_Pi_Pico_W_SC0918")(type "KiCad")(uri "${KICAD8_3RD_PARTY}/Raspberry_Pi_Pico_W_Kicad_Files-main/Raspberry_Pi_Pico_W_SC0918.kicad_sym")(options "")(descr ""))
+  (lib (name "tft_320x240")(type "KiCad")(uri "${KICAD8_3RD_PARTY}/TFT/tft_320x240.kicad_sym")(options "")(descr ""))
 )
