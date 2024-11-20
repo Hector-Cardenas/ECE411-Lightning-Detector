@@ -48,3 +48,5 @@ __PCB__
 
   Q: How do we plan on mounting?
   A: We should add mounting holes!
+
+  Comment: Need to add traces for Display even if we don't use it.
