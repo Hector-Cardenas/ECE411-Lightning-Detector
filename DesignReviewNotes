@@ -1,0 +1,50 @@
+Design review notes from Team 1 members Chris Kane-Pardy and Caleb Monti;
+__PDS__
+Q: How are you going to test at 60 miles?
+A: We are going to do our best using the test system (Marx generator) to see what kind of range we have. Not a must.
+
+Q: Is external power 120V from wall?
+A: External power will be USB
+
+__SCHEMATIC__
+  __POWER BLOCK__
+  Q: What power supply are you using
+  A: Boost converter for sub 5V inputs
+
+  __RF INPUT__
+  Q: What is J3?
+  A: Test Header/Manufacturer provided Eval board connection
+
+  Q: Is J2 for antenna?
+  A: any RF input device, likely antenna
+
+  __MAIN BOARD__
+  Q: Why is PDS uC listed as STM32?
+  A: Change was made and PDS not updated; will fix
+
+  Q: Are unused pins NCs?
+  A: They will be yes
+
+  Q: What bus used for transceiver?
+  A: SPI
+
+  Q: Are there any test points on the PCB for J4?
+  A: Plan on using solder holes as test points
+
+  Comment: Should put NCs on all floating pins
+
+__PCB__
+
+  Q: Will we label pins on PCB or just trust PICO pinout?
+  A: PICO pinout is labeled
+
+  Comment: Should add silkscreen for labeling on various pinouts
+
+  Comment: J3 pinout missing a trace
+
+  Comment: Some traces may be a bit close together; most close traces are low frequency. Will try to separate if possible
+
+  Comment: SILKSCREEN AGAIN! - result of designing for EPL PCB. 
+
+  Q: How do we plan on mounting?
+  A: We should add mounting holes!
