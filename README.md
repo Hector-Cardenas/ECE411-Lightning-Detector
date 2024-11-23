@@ -4,11 +4,11 @@ All source code downloads require installation of the pico-sdk, instructions can
 It is recommended to install in VSCode as the firmware developers developed, tested, and integrated in the VSCode environment
 
 For Linux terminal use:
-Clone this repo
-cd ECE411-THUNDER-BUDDIES/software/src
-mkdir build
-cd build
-cmake ..
-make ThunderBuddy
-mv ThunderBuddy.elf pico/dir/here
+Clone this repo\
+cd ECE411-THUNDER-BUDDIES/software/src\
+mkdir build\
+cd build\
+cmake ..\
+make ThunderBuddy\
+mv ThunderBuddy.elf pico/dir/here\
 
