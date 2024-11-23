@@ -32,7 +32,7 @@
 #define I2C_SCL 9
 
 // ADC defines
-#define THRESHOLD 303 // Placeholder until binary value is determined
+#define THRESHOLD 1 // Placeholder until binary value is determined
 #define ADC_PIN 26
 #define ADC_IRQ 22
 #define REFERENCE_VOLTAGE 3.3
@@ -56,21 +56,32 @@
 #define R1 UINT32_C(0x00021011)
 #define R2 UINT32_C(0x00003ED2)
 
+//7020 transmission defines
+#define TXRXDATA_PIN 12
+#define TX_T         200
+#define PREAMBLE     0xAA
+#define DEVICE_ID    0x96
+#define CALLSIGN     "KK7ETD"
+#define CALL_WIDTH   6
+
 
 // Function declarations
 void ADCIRQHandler();
 void overThreshold();
 void writeRegister(uint32_t data); //Write to device over spi  
 void transceiverInit();
+void transmit_id();
+void tx_char();
 
 int main()
 {
     // IO initialization
+    #ifdef PRINT
+    printf("Performing initialization");
+    #endif
     stdio_init_all();
     gpio_set_dir(DETECTED, true);
     adc_init();
-    adc_gpio_init(ADC_PIN);
-    adc_select_input(0);
     adc_gpio_init(ADC_PIN);
     adc_select_input(0);
     adc_irq_set_enabled(true);
@@ -99,7 +110,12 @@ int main()
     // Chip select is active-low, so we'll initialise it to a driven-high state
     gpio_set_dir(PIN_CS, GPIO_OUT);
     gpio_put(PIN_CS, 1);
-    // For more examples of SPI use see https://github.com/raspberrypi/pico-examples/tree/master/spi
+
+    //Initializing transceiver
+    #ifdef PRINT
+    printf("Initializing transceiver");
+    #endif
+    transceiverInit();
 
     // SCREEN INITIALIZATION GOES HERE
 
@@ -114,15 +130,28 @@ int main()
 
     while (true)
     {
+	#ifndef FORCEINT
         rfInput = adc_read() * conversion;
-        if (rfInput > THRESHOLD)
+	#elif
+	rfinput = 10;
+	#endif
+        if (rfInput > THRESHOLD){
+	#ifdef PRINT
+	printf("We are checking if the input exceeds the threshold");
+	#endif
             irq_set_pending(ADC_IRQ);
+	}
     }
 }
+
+//function definitions
 
 
 // if the interrupt bit is set, we have gone over our threshold and need to respond accordingly
 void ADCIRQHandler(){
+   #ifdef PRINT
+   printf("We are in the interrupt handler");
+   #endif
    overThreshold();
    irq_clear(ADC_IRQ); //Clear the IRQ bit so we can respond to another one in teh future
 }
@@ -132,15 +161,25 @@ void overThreshold(){ // we have gone over our threshold this is where our trans
    //For now (11-7-24), just going to add the on board LED blink to verify the interrupt is working as expected 
     int rc =  cyw43_arch_init();
     hard_assert(rc == PICO_OK);
+    #ifdef PRINT
+    printf("We are over the threshold, doing something");
+    #endif
+    #ifdef FLASH
     while (1){ // this will just flash the onboard LED when we interrupt
         cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN,true);
         sleep_ms(LED_DELAY_MS);
         cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN,false);
         sleep_ms(LED_DELAY_MS);
     }
+    #elif 
+    //TODO: insert Hector's transmission code here
+    #endif
 }
 
 void writeRegister(uint32_t data){ // Sending data over SPI
+    #ifdef PRINT
+    printf("We are sending %x over SPI", data);
+    #endif
     uint16_t buffer[2]; //When we send the data over SPI its in one word so we jsut need to split the word into two halfwords
     buffer[0] = data & 0xFFFF; // Lower bits 
     buffer[1] = (data >> 16) & 0xFFFF; // Upper bits
@@ -151,4 +190,28 @@ void transceiverInit(){ // Initializing the AD7020 over SPI
     writeRegister(R0);
     writeRegister(R1);
     writeRegister(R2);
+}
+
+void transmit_id(){    
+    // Transmit  preamble, callsign, and device ID
+    char id = DEVICE_ID;
+    char callsign[CALL_WIDTH] = CALLSIGN;
+    char preamble = PREAMBLE;
+    
+    // Send message components
+    tx_char(preamble);
+    for (int i = 0; i < CALL_WIDTH; i++) tx_char(callsign[i]);
+    tx_char(id); 
+
+    gpio_put(TX_T, 0); // Set pin low to mute PA
+}
+    
+
+void tx_char(char packet){
+    for (int i = sizeof(char)-1; i >= 0; i--) {     
+    // Transmit starting from MSB, using IEEE Manchester Code
+        gpio_put(TXRXDATA_PIN, (~(packet >> i) & 1)); 
+        sleep_ms(TX_T/2);
+        gpio_put(TXRXDATA_PIN, ( (packet >> i) & 1));
+        sleep_ms(TX_T/2);
 }
