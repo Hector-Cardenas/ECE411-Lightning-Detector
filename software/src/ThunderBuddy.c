@@ -52,15 +52,15 @@
 
 //ADF7020 defines (Values to be determined)
 
-#define R0 0x1138DCA0
-#define R1 0x00021011
-#define R2 0x00003ED2
+#define R0 UINT32_C(0x1138DCA0)
+#define R1 UINT32_C(0x00021011)
+#define R2 UINT32_C(0x00003ED2)
 
 
 // Function declarations
 void ADCIRQHandler();
 void overThreshold();
-void writeRegister(uint16_t data); //Write to device over spi  
+void writeRegister(uint32_t data); //Write to device over spi  
 void transceiverInit();
 
 int main()
@@ -140,7 +140,7 @@ void overThreshold(){ // we have gone over our threshold this is where our trans
     }
 }
 
-void writeRegister(uint16_t data){ // Sending data over SPI
+void writeRegister(uint32_t data){ // Sending data over SPI
     uint16_t buffer[2]; //When we send the data over SPI its in one word so we jsut need to split the word into two halfwords
     buffer[0] = data & 0xFFFF; // Lower bits 
     buffer[1] = (data >> 16) & 0xFFFF; // Upper bits
