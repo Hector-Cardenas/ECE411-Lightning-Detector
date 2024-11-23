@@ -71,7 +71,7 @@ void overThreshold();
 void writeRegister(uint32_t data); //Write to device over spi  
 void transceiverInit();
 void transmit_id();
-void tx_char();
+void txPacket(char packet);
 
 int main()
 {
@@ -132,7 +132,7 @@ int main()
     {
 	#ifndef FORCEINT
         rfInput = adc_read() * conversion;
-	#elif
+	#else
 	rfinput = 10;
 	#endif
         if (rfInput > THRESHOLD){
@@ -153,12 +153,10 @@ void ADCIRQHandler(){
    printf("We are in the interrupt handler");
    #endif
    overThreshold();
-   irq_clear(ADC_IRQ); //Clear the IRQ bit so we can respond to another one in teh future
+   irq_clear(ADC_IRQ); //Clear the IRQ bit so we can respond to another one in the future
 }
 
 void overThreshold(){ // we have gone over our threshold this is where our transceiver/wifi output goes
-   //TODO: do what we need to do ie wifi/transceiver output
-   //For now (11-7-24), just going to add the on board LED blink to verify the interrupt is working as expected 
     int rc =  cyw43_arch_init();
     hard_assert(rc == PICO_OK);
     #ifdef PRINT
@@ -171,8 +169,8 @@ void overThreshold(){ // we have gone over our threshold this is where our trans
         cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN,false);
         sleep_ms(LED_DELAY_MS);
     }
-    #elif 
-    //TODO: insert Hector's transmission code here
+    #else 
+    transmit_id();
     #endif
 }
 
@@ -199,19 +197,20 @@ void transmit_id(){
     char preamble = PREAMBLE;
     
     // Send message components
-    tx_char(preamble);
-    for (int i = 0; i < CALL_WIDTH; i++) tx_char(callsign[i]);
-    tx_char(id); 
+    txPacket(preamble);
+    for (int i = 0; i < CALL_WIDTH; i++) txPacket(callsign[i]);
+    txPacket(id); 
 
     gpio_put(TX_T, 0); // Set pin low to mute PA
 }
     
 
-void tx_char(char packet){
+void txPacket(char packet){
     for (int i = sizeof(char)-1; i >= 0; i--) {     
     // Transmit starting from MSB, using IEEE Manchester Code
         gpio_put(TXRXDATA_PIN, (~(packet >> i) & 1)); 
         sleep_ms(TX_T/2);
         gpio_put(TXRXDATA_PIN, ( (packet >> i) & 1));
         sleep_ms(TX_T/2);
+	}
 }
