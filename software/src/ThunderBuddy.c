@@ -15,6 +15,23 @@
 
 #define LED_DELAY_MS 250
 
+//Debug macro expansions
+#ifdef FLASHPRINT
+#define FLASH
+#define PRINT
+#endif
+
+#ifdef PRINTFORCE
+#define PRINT
+#define FORCEINT
+#endif
+
+#ifdef DEBUG
+#define FLASH
+#define PRINT
+#define FORCEINT
+#endif
+
 // SPI Defines
 // We are going to use SPI 0, and allocate it to the following GPIO pins
 // Pins can be changed, see the GPIO function select table in the datasheet for information on GPIO assignments
@@ -32,13 +49,10 @@
 #define I2C_SCL 9
 
 // ADC defines
-#define THRESHOLD 1 // Placeholder until binary value is determined
+#define THRESHOLD 1
 #define ADC_PIN 26
 #define ADC_IRQ 22
 #define REFERENCE_VOLTAGE 3.3
-
-// GPIO defines
-#define DETECTED 303 // Placeholder until output pin is determined
 
 // UART defines
 // By default the stdout UART is `uart0`, so we will use the second one
@@ -66,7 +80,6 @@
 
 
 // Function declarations
-void ADCIRQHandler();
 void overThreshold();
 void writeRegister(uint32_t data); //Write to device over spi  
 void transceiverInit();
@@ -80,13 +93,10 @@ int main()
     printf("Performing initialization");
     #endif
     stdio_init_all();
-    gpio_set_dir(DETECTED, true);
+    gpio_set_dir(TXRXDATA_PIN, true);
     adc_init();
     adc_gpio_init(ADC_PIN);
     adc_select_input(0);
-    adc_irq_set_enabled(true);
-
-    irq_set_exclusive_handler(ADC_IRQ,ADCIRQHandler);
 
     // variables for ADC conversion
     uint16_t rawInput;
@@ -117,48 +127,24 @@ int main()
     #endif
     transceiverInit();
 
-    // SCREEN INITIALIZATION GOES HERE
-
-    /*     // I2C Initialisation. Using it at 400Khz. Saving for later in case we need it
-        i2c_init(I2C_PORT, 400 * 1000);
-
-        gpio_set_function(I2C_SDA, GPIO_FUNC_I2C);
-        gpio_set_function(I2C_SCL, GPIO_FUNC_I2C);
-        gpio_pull_up(I2C_SDA);
-        gpio_pull_up(I2C_SCL);
-        // For more examples of I2C use see https://github.com/raspberrypi/pico-examples/tree/master/i2c */
-
     while (true)
     {
 	#ifndef FORCEINT
         rfInput = adc_read() * conversion;
 	#else
-	rfinput = 10;
+	rfInput = 10;
 	#endif
         if (rfInput > THRESHOLD){
 	#ifdef PRINT
 	printf("We are checking if the input exceeds the threshold");
 	#endif
-            irq_set_pending(ADC_IRQ);
+            overThreshold();
 	}
     }
 }
 
 //function definitions
-
-
-// if the interrupt bit is set, we have gone over our threshold and need to respond accordingly
-void ADCIRQHandler(){
-   #ifdef PRINT
-   printf("We are in the interrupt handler");
-   #endif
-   overThreshold();
-   irq_clear(ADC_IRQ); //Clear the IRQ bit so we can respond to another one in the future
-}
-
 void overThreshold(){ // we have gone over our threshold this is where our transceiver/wifi output goes
-    int rc =  cyw43_arch_init();
-    hard_assert(rc == PICO_OK);
     #ifdef PRINT
     printf("We are over the threshold, doing something");
     #endif
@@ -169,9 +155,8 @@ void overThreshold(){ // we have gone over our threshold this is where our trans
         cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN,false);
         sleep_ms(LED_DELAY_MS);
     }
-    #else 
-    transmit_id();
     #endif
+    transmit_id();
 }
 
 void writeRegister(uint32_t data){ // Sending data over SPI
@@ -185,12 +170,18 @@ void writeRegister(uint32_t data){ // Sending data over SPI
 }
 
 void transceiverInit(){ // Initializing the AD7020 over SPI
+    #ifdef PRINT
+    printf("We are initializing the 7020 transceiver\n");
+    #endif
     writeRegister(R0);
     writeRegister(R1);
     writeRegister(R2);
 }
 
 void transmit_id(){    
+    #ifdef PRINT
+    printf("We are transmitting using GPIO from Pico W to 7020\n");
+    #endif
     // Transmit  preamble, callsign, and device ID
     char id = DEVICE_ID;
     char callsign[CALL_WIDTH] = CALLSIGN;
@@ -206,6 +197,9 @@ void transmit_id(){
     
 
 void txPacket(char packet){
+    #ifdef PRINT
+    printf("We are in the packet transmission function, part of transmit_id\n");
+    #endif
     for (int i = sizeof(char)-1; i >= 0; i--) {     
     // Transmit starting from MSB, using IEEE Manchester Code
         gpio_put(TXRXDATA_PIN, (~(packet >> i) & 1)); 
