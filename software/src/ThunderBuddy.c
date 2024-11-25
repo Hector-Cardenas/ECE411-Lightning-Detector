@@ -34,11 +34,9 @@
 // ADC defines
 #define THRESHOLD 1 // Placeholder until binary value is determined
 #define ADC_PIN 26
-#define ADC_IRQ 22
+//#define ADC_IRQ 26
 #define REFERENCE_VOLTAGE 3.3
 
-// GPIO defines
-#define DETECTED 303 // Placeholder until output pin is determined
 
 // UART defines
 // By default the stdout UART is `uart0`, so we will use the second one
@@ -66,7 +64,6 @@
 
 
 // Function declarations
-void ADCIRQHandler();
 void overThreshold();
 void writeRegister(uint32_t data); //Write to device over spi  
 void transceiverInit();
@@ -80,25 +77,13 @@ int main()
     printf("Performing initialization");
     #endif
     stdio_init_all();
-    gpio_set_dir(DETECTED, true);
+    gpio_set_dir(TXRXDATA_PIN, true);
     adc_init();
     adc_gpio_init(ADC_PIN);
     adc_select_input(0);
-    adc_irq_set_enabled(true);
-
-    irq_set_exclusive_handler(ADC_IRQ,ADCIRQHandler);
-
     // variables for ADC conversion
-    uint16_t rawInput;
     float conversion = (REFERENCE_VOLTAGE) / (1 << 12);
     uint16_t rfInput;
-
-    // Initialise the Wi-Fi chip
-    if (cyw43_arch_init())
-    {
-        printf("Wi-Fi init failed\n");
-        return -1;
-    }
 
     // SPI initialisation. This example will use SPI at 1MHz.
     spi_init(SPI_PORT, 1000 * 1000);
@@ -110,6 +95,12 @@ int main()
     // Chip select is active-low, so we'll initialise it to a driven-high state
     gpio_set_dir(PIN_CS, GPIO_OUT);
     gpio_put(PIN_CS, 1);
+    
+    // Set up WiFi LED 
+    if(cyw43_arch_init()){
+    printf("WiFi LED initialization failed");
+    return -1;
+    }
 
     //Initializing transceiver
     #ifdef PRINT
@@ -117,68 +108,43 @@ int main()
     #endif
     transceiverInit();
 
-    // SCREEN INITIALIZATION GOES HERE
-
-    /*     // I2C Initialisation. Using it at 400Khz. Saving for later in case we need it
-        i2c_init(I2C_PORT, 400 * 1000);
-
-        gpio_set_function(I2C_SDA, GPIO_FUNC_I2C);
-        gpio_set_function(I2C_SCL, GPIO_FUNC_I2C);
-        gpio_pull_up(I2C_SDA);
-        gpio_pull_up(I2C_SCL);
-        // For more examples of I2C use see https://github.com/raspberrypi/pico-examples/tree/master/i2c */
-
     while (true)
     {
 	#ifndef FORCEINT
         rfInput = adc_read() * conversion;
 	#else
-	rfinput = 10;
+	rfInput = 10;
 	#endif
         if (rfInput > THRESHOLD){
 	#ifdef PRINT
 	printf("We are checking if the input exceeds the threshold");
 	#endif
-            irq_set_pending(ADC_IRQ);
+            overThreshold();
 	}
     }
 }
 
 //function definitions
 
-
-// if the interrupt bit is set, we have gone over our threshold and need to respond accordingly
-void ADCIRQHandler(){
-   #ifdef PRINT
-   printf("We are in the interrupt handler");
-   #endif
-   overThreshold();
-   irq_clear(ADC_IRQ); //Clear the IRQ bit so we can respond to another one in the future
-}
-
 void overThreshold(){ // we have gone over our threshold this is where our transceiver/wifi output goes
-    int rc =  cyw43_arch_init();
-    hard_assert(rc == PICO_OK);
     #ifdef PRINT
     printf("We are over the threshold, doing something");
     #endif
     #ifdef FLASH
-    while (1){ // this will just flash the onboard LED when we interrupt
-        cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN,true);
-        sleep_ms(LED_DELAY_MS);
-        cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN,false);
-        sleep_ms(LED_DELAY_MS);
-    }
-    #else 
+    while (1){
+    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN,true); //Set LED to be on
+    sleep_ms(250);
+    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN,false);
+    sleep_ms(250);
+}
     transmit_id();
-    #endif
 }
 
 void writeRegister(uint32_t data){ // Sending data over SPI
     #ifdef PRINT
     printf("We are sending %x over SPI", data);
     #endif
-    uint16_t buffer[2]; //When we send the data over SPI its in one word so we jsut need to split the word into two halfwords
+    uint16_t buffer[2]; //When we send the data over SPI its in one word so we just need to split the word into two halfwords
     buffer[0] = data & 0xFFFF; // Lower bits 
     buffer[1] = (data >> 16) & 0xFFFF; // Upper bits
     spi_write16_blocking(spi0,buffer,2);
