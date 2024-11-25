@@ -131,14 +131,11 @@ void overThreshold(){ // we have gone over our threshold this is where our trans
     printf("We are over the threshold, doing something");
     #endif
     #ifdef FLASH
-    while (1){
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN,true); //Set LED to be on
-    sleep_ms(250);
-    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN,false);
-    sleep_ms(250);
-}
     #endif
     transmit_id();
+    #ifdef FLASH
+    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN,false)
 }
 
 void writeRegister(uint32_t data){ // Sending data over SPI
