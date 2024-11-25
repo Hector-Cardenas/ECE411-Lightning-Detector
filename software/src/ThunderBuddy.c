@@ -51,7 +51,7 @@
 // ADC defines
 #define THRESHOLD 1
 #define ADC_PIN 26
-#define ADC_IRQ 22
+//#define ADC_IRQ 26
 #define REFERENCE_VOLTAGE 3.3
 
 // UART defines
@@ -98,17 +98,9 @@ int main()
     adc_gpio_init(ADC_PIN);
     adc_select_input(0);
 
-    // variables for ADC conversion
-    uint16_t rawInput;
+  // variables for ADC conversion
     float conversion = (REFERENCE_VOLTAGE) / (1 << 12);
     uint16_t rfInput;
-
-    // Initialise the Wi-Fi chip
-    if (cyw43_arch_init())
-    {
-        printf("Wi-Fi init failed\n");
-        return -1;
-    }
 
     // SPI initialisation. This example will use SPI at 1MHz.
     spi_init(SPI_PORT, 1000 * 1000);
@@ -120,6 +112,12 @@ int main()
     // Chip select is active-low, so we'll initialise it to a driven-high state
     gpio_set_dir(PIN_CS, GPIO_OUT);
     gpio_put(PIN_CS, 1);
+    
+    // Set up WiFi LED 
+    if(cyw43_arch_init()){
+    printf("WiFi LED initialization failed");
+    return -1;
+    }
 
     //Initializing transceiver
     #ifdef PRINT
@@ -149,21 +147,18 @@ void overThreshold(){ // we have gone over our threshold this is where our trans
     printf("We are over the threshold, doing something");
     #endif
     #ifdef FLASH
-    while (1){ // this will just flash the onboard LED when we interrupt
-        cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN,true);
-        sleep_ms(LED_DELAY_MS);
-        cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN,false);
-        sleep_ms(LED_DELAY_MS);
-    }
+    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN,true); //Set LED to be on
     #endif
     transmit_id();
+    #ifdef FLASH
+    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN,false)
 }
 
 void writeRegister(uint32_t data){ // Sending data over SPI
     #ifdef PRINT
     printf("We are sending %x over SPI", data);
     #endif
-    uint16_t buffer[2]; //When we send the data over SPI its in one word so we jsut need to split the word into two halfwords
+    uint16_t buffer[2]; //When we send the data over SPI its in one word so we just need to split the word into two halfwords
     buffer[0] = data & 0xFFFF; // Lower bits 
     buffer[1] = (data >> 16) & 0xFFFF; // Upper bits
     spi_write16_blocking(spi0,buffer,2);
