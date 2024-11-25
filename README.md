@@ -10,5 +10,12 @@ mkdir build\
 cd build\
 cmake ..\
 make ThunderBuddy\
-mv ThunderBuddy.elf pico/dir/here\
+mv ThunderBuddy.elf pico/dir/here
 
+CMake options:\
+-DPRINT will print messages to stdout\
+-DFLASH will flash the onboard LED when transmitting to 7020\
+-DFORCE will force an lightning detected condition always\
+-DPRINTFLASH combines flash and print\
+-DPRINTFORCE combines force and print\
+-DDEBUG enables all debug modes\
