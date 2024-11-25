@@ -151,7 +151,8 @@ void overThreshold(){ // we have gone over our threshold this is where our trans
     #endif
     transmit_id();
     #ifdef FLASH
-    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN,false)
+    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN,false);
+    #endif
 }
 
 void writeRegister(uint32_t data){ // Sending data over SPI
