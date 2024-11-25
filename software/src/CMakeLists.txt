@@ -42,7 +42,7 @@ pico_set_program_version(ThunderBuddy "0.1")
 
 # Modify the below lines to enable/disable output over UART/USB
 pico_enable_stdio_uart(ThunderBuddy 0)
-pico_enable_stdio_usb(ThunderBuddy 0)
+pico_enable_stdio_usb(ThunderBuddy 1)
 
 # Add the standard library to the build
 target_link_libraries(ThunderBuddy
@@ -68,4 +68,28 @@ target_link_libraries(ThunderBuddy
         )
 
 pico_add_extra_outputs(ThunderBuddy)
+option(PRINT "Prints debug messages to console" OFF)
+option(FLASH "Flashes onboard LED when attempting to transmit" OFF)
+option(FORCE "Forces transmit" OFF)
+option(PRINTFLASH "Prints debug messages to console, and flashes onboard LED" OFF)
+option(PRINTFORCE "Prints debug messages to console, and forces transmit" OFF)
+option(DEBUG "Prints debug messages to console, flashes onboard LED, and forces transmit" OFF)
 
+if(PRINT)
+	add_definitions(-DPRINT)
+endif()
+if(FLASH)
+	add_definitions(-DFLASH)
+endif()
+if(FORCE)
+	add_definitions(-DFORCEINT)
+endif()
+if(PRINTFLASH)
+	add_definitions(-DPRINTFLASH)
+endif()
+if(PRINTFORCE)
+	add_definitions(-DPRINTFORCE)
+endif()
+if(DEBUG)
+	add_definitions(-DDEBUG)
+endif()
