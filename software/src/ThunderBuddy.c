@@ -137,6 +137,7 @@ void overThreshold(){ // we have gone over our threshold this is where our trans
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN,false);
     sleep_ms(250);
 }
+    #endif
     transmit_id();
 }
 
