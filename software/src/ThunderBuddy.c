@@ -89,10 +89,8 @@ void txPacket(char packet);
 int main()
 {
     // IO initialization
-    #ifdef PRINT
-    printf("Performing initialization\n");
-    #endif
     stdio_init_all();
+    sleep_ms(5000);
     gpio_set_dir(TXRXDATA_PIN, true);
     adc_init();
     adc_gpio_init(ADC_PIN);
