@@ -90,7 +90,7 @@ int main()
 {
     // IO initialization
     #ifdef PRINT
-    printf("Performing initialization");
+    printf("Performing initialization\n");
     #endif
     stdio_init_all();
     gpio_set_dir(TXRXDATA_PIN, true);
@@ -115,13 +115,13 @@ int main()
     
     // Set up WiFi LED 
     if(cyw43_arch_init()){
-    printf("WiFi LED initialization failed");
+    printf("WiFi LED initialization failed\n");
     return -1;
     }
 
     //Initializing transceiver
     #ifdef PRINT
-    printf("Initializing transceiver");
+    printf("Initializing transceiver\n");
     #endif
     transceiverInit();
 
@@ -134,7 +134,7 @@ int main()
 	#endif
         if (rfInput > THRESHOLD){
 	#ifdef PRINT
-	printf("We are checking if the input exceeds the threshold");
+	printf("We are checking if the input exceeds the threshold\n");
 	#endif
             overThreshold();
 	}
@@ -144,7 +144,7 @@ int main()
 //function definitions
 void overThreshold(){ // we have gone over our threshold this is where our transceiver/wifi output goes
     #ifdef PRINT
-    printf("We are over the threshold, doing something");
+    printf("We are over the threshold, doing something\n");
     #endif
     #ifdef FLASH
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN,true); //Set LED to be on
@@ -152,12 +152,13 @@ void overThreshold(){ // we have gone over our threshold this is where our trans
     transmit_id();
     #ifdef FLASH
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN,false);
+    sleep_ms(250);
     #endif
 }
 
 void writeRegister(uint32_t data){ // Sending data over SPI
     #ifdef PRINT
-    printf("We are sending %x over SPI", data);
+    printf("We are sending %x over SPI\n", data);
     #endif
     uint16_t buffer[2]; //When we send the data over SPI its in one word so we just need to split the word into two halfwords
     buffer[0] = data & 0xFFFF; // Lower bits 
