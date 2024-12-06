@@ -1,8 +1,8 @@
 Github Repo for the lightning detector, AKA the THUNDER BUDDY.
 
-All source code downloads require installation of the pico-sdk, instructions can be found at https://www.raspberrypi.com/news/get-started-with-raspberry-pi-pico-series-and-vs-code/
-Building and compiling was done on a linux machine to produce a .uf2 file to drag and drop into the pico w when in BOOTSEL mode. This is the recommended way to build the project/
-For Linux terminal use:
+All source code downloads require installation of the pico-sdk, instructions can be found at https://www.raspberrypi.com/news/get-started-with-raspberry-pi-pico-series-and-vs-code/ \
+Building and compiling was done on a linux machine to produce a .uf2 file to drag and drop into the pico w when in BOOTSEL mode. This is the recommended way to build the project\
+For Linux terminal use:\
 Clone this repo\
 cd ECE411-THUNDER-BUDDIES/software/src\
 mkdir build\
