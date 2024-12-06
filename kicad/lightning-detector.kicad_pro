@@ -59,10 +59,8 @@
         }
       ],
       "drc_exclusions": [
-        "courtyards_overlap|132270001|48945001|630a1a0c-d92c-40f0-81e6-55f60f549ec2|2ad52dc7-49c0-45f8-b6fd-00e8ef9d6f33",
         "courtyards_overlap|133575001|55450001|630a1a0c-d92c-40f0-81e6-55f60f549ec2|cd8eccc7-73dc-4ac1-9e52-4df24b3b9969",
         "courtyards_overlap|134145001|49570001|630a1a0c-d92c-40f0-81e6-55f60f549ec2|8037be63-90e0-4de6-aefe-8c55f4cc8865",
-        "courtyards_overlap|134145001|53470001|630a1a0c-d92c-40f0-81e6-55f60f549ec2|2e58fa44-a926-4c0e-8d9e-811f80f87c58",
         "courtyards_overlap|135027258|60358649|630a1a0c-d92c-40f0-81e6-55f60f549ec2|945966a6-576c-4a55-b6a8-a712e63b8f62",
         "courtyards_overlap|137670001|50745001|630a1a0c-d92c-40f0-81e6-55f60f549ec2|dfee31b9-d0fe-4874-9f59-70bc91b48957",
         "starved_thermal|120000000|87200000|32360566-2d56-4ada-beb4-be4f9091ae35|a6ad9160-152a-47b4-bd03-9325127ec323|F.Cu",
@@ -494,7 +492,7 @@
       "plot": "build/",
       "pos_files": "",
       "specctra_dsn": "",
-      "step": "",
+      "step": "lightning-detector.step",
       "svg": "",
       "vrml": ""
     },
