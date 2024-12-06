@@ -41,7 +41,7 @@ pico_set_program_name(ThunderBuddy "ThunderBuddy")
 pico_set_program_version(ThunderBuddy "0.1")
 
 # Modify the below lines to enable/disable output over UART/USB
-pico_enable_stdio_uart(ThunderBuddy 0)
+pico_enable_stdio_uart(ThunderBuddy 1)
 pico_enable_stdio_usb(ThunderBuddy 1)
 
 # Add the standard library to the build
